@@ -264,6 +264,8 @@
         "Times New Roman": "serif"
     };
 
+    let debounceTimer = null;
+
     function updateFont(paneNumber, fontName) {
         if (!fontName || fontName.length < 2) return;
 
@@ -271,6 +273,11 @@
         const article = pane.querySelector('.content');
         const linkId = `font-link-pane-${paneNumber}`;
         let link = document.getElementById(linkId);
+
+        // Clear existing global timer
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
 
         // If it's a known system font, apply it with its generic fallback and stop
         if (systemFonts[fontName]) {
@@ -280,17 +287,21 @@
         }
 
         // Otherwise, attempt to load from Google Fonts
-        const formattedName = fontName.trim().replace(/\s+/g, '+');
-        
-        if (!link) {
-            link = document.createElement('link');
-            link.id = linkId;
-            link.rel = 'stylesheet';
-            document.head.appendChild(link);
-        }
-        
-        link.href = `https://fonts.googleapis.com/css2?family=${formattedName}:ital,wght@0,400;0,700;1,400;1,700&display=swap`;
-        article.style.fontFamily = `"${fontName}", serif`;
+        // Use a 300ms delay after the last keystroke
+        // to avoid trying to fetch fonts while the user is still typing.
+        debounceTimer = setTimeout(() => {
+            const formattedName = fontName.trim().replace(/\s+/g, '+');
+
+            if (!link) {
+                link = document.createElement('link');
+                link.id = linkId;
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+            }
+
+            link.href = `https://fonts.googleapis.com/css2?family=${formattedName}:ital,wght@0,400;0,700;1,400;1,700&display=swap`;
+            article.style.fontFamily = `"${fontName}", serif`;
+        }, 300);
     }
 
     function scrollToPane(index) {
