@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Previewer</title>
+    <style>
+        /* --- Downstyler Typography & Base Styles --- */
+        
+        /* Make HTML more responsive */
+        img, canvas, iframe, video, svg, select, textarea { max-width: 100%; height: auto; }
+        
+        /* Box-model fix */
+        html { box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
+
+        /* Fluid typography */
+        html { font-size: clamp(1rem, calc(0.85rem + 0.5vw), 1.25rem); }
+
+        body { 
+            line-height: 1.5; 
+            margin: 0; 
+            padding: 0;
+            color: #333;
+            font-family: serif; /* Default fallback */
+            overflow-x: hidden;
+        }
+
+        /* Layout for swiping */
+        .panes-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            height: 100vh;
+        }
+
+        .pane {
+            flex: 0 0 100vw;
+            width: 100vw;
+            height: 100%;
+            overflow-y: auto;
+            scroll-snap-align: start;
+            padding: 1rem 1rem 4rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        article {
+            max-width: 40em;
+            width: 100%;
+            text-align: left;
+        }
+
+        /* Typography spacing & alignment */
+        p { text-align: justify; hyphens: auto; margin-bottom: 1.5em; }
+        h1, h2, h3 { margin-top: 1.5em; margin-bottom: 0.5em; line-height: 1.2; font-weight: 700; }
+
+        /* Logarithmic heading sizes */
+        h1 { color: #111; font-size: 200.00%; }
+        h2 { color: #222; font-size: 178.18%; }
+        h3 { color: #333; font-size: 158.74%; }
+
+        .byline {
+            font-size: 0.85em;
+            color: #777;
+            margin-top: -0.5em;
+            margin-bottom: 2em;
+        }
+
+        a { color: RoyalBlue; }
+        a:visited { color: BlueViolet; }
+        strong { color: #222; }
+
+        /* --- Tool UI --- */
+
+        .selector-container {
+            width: 100%;
+            max-width: 40em;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: sans-serif;
+            background: #f9f9f9;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #aaa;
+        }
+
+        /* Navigation Arrows */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            color: rgba(0,0,0,0.3);
+            z-index: 100;
+            user-select: none;
+            transition: opacity 0.3s, color 0.2s;
+            cursor: pointer;
+            padding: 20px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-arrow:hover {
+            color: rgba(0,0,0,0.6);
+        }
+        .nav-arrow.left { left: 5px; }
+        .nav-arrow.right { right: 5px; }
+
+        /* Hide scrollbars for a cleaner mobile look */
+        .panes-container::-webkit-scrollbar { display: none; }
+        .panes-container { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+
+<button class="nav-arrow left" onclick="scrollToPane(0)" aria-label="Previous pane">&lsaquo;</button>
+<button class="nav-arrow right" onclick="scrollToPane(1)" aria-label="Next pane">&rsaquo;</button>
+
+<div class="panes-container" id="panes">
+    <!-- Pane 1 -->
+    <section class="pane" id="pane-1">
+        <div class="selector-container">
+            <input type="text" list="font-list" placeholder="Search Font 1 (e.g. Roboto)..." oninput="updateFont(1, this.value)">
+        </div>
+        <article class="content">
+            <h1>The Art of Digital Typography</h1>
+            <p class="byline">By Alex Rivers • May 9, 2026</p>
+            
+            <p>Typography is the <strong>visual component of the written word</strong>.
+            In the digital age,
+            the choice of a font family is not merely an aesthetic decision
+            but a fundamental part of the user experience.
+            A well-chosen typeface can enhance <em>legibility</em>,
+            establish hierarchy,
+            and convey a specific mood or brand identity.</p>
+            
+            <h2>The Science of Reading</h2>
+            <p>When we read on screens,
+            our eyes often scan in an "F" pattern.
+            Large, clear headings help guide this process.
+            For more information on this,
+            you can check out <a href="#">recent studies on readability</a>.
+            Contrast also plays a vital role;
+            a subtle grey byline helps separate metadata from the primary narrative
+            without distracting the reader.</p>
+            
+            <p>Modern web browsers have come a long way in rendering complex glyphs.
+            With tools like Google Fonts,
+            designers have access to thousands of high-quality typefaces
+            that can be loaded on the fly,
+            ensuring that the web remains a beautiful and diverse medium for information.</p>
+        </article>
+    </section>
+
+    <!-- Pane 2 -->
+    <section class="pane" id="pane-2">
+        <div class="selector-container">
+            <input type="text" list="font-list" placeholder="Search Font 2 (e.g. Merriweather)..." oninput="updateFont(2, this.value)">
+        </div>
+        <article class="content">
+            <h1>The Art of Digital Typography</h1>
+            <p class="byline">By Alex Rivers • May 9, 2026</p>
+            
+            <p>Typography is the <strong>visual component of the written word</strong>.
+            In the digital age,
+            the choice of a font family is not merely an aesthetic decision
+            but a fundamental part of the user experience.
+            A well-chosen typeface can enhance <em>legibility</em>,
+            establish hierarchy,
+            and convey a specific mood or brand identity.</p>
+            
+            <h2>The Science of Reading</h2>
+            <p>When we read on screens,
+            our eyes often scan in an "F" pattern.
+            Large, clear headings help guide this process.
+            For more information on this,
+            you can check out <a href="#">recent studies on readability</a>.
+            Contrast also plays a vital role;
+            a subtle grey byline helps separate metadata from the primary narrative
+            without distracting the reader.</p>
+            
+            <p>Modern web browsers have come a long way in rendering complex glyphs.
+            With tools like Google Fonts,
+            designers have access to thousands of high-quality typefaces
+            that can be loaded on the fly,
+            ensuring that the web remains a beautiful and diverse medium for information.</p>
+        </article>
+    </section>
+</div>
+
+<datalist id="font-list">
+    <!-- Popular Google Fonts -->
+    <option value="Roboto">
+    <option value="Open Sans">
+    <option value="Lato">
+    <option value="Montserrat">
+    <option value="Oswald">
+    <option value="Source Sans Pro">
+    <option value="Slabo 27px">
+    <option value="Raleway">
+    <option value="PT Sans">
+    <option value="Merriweather">
+    <option value="Playfair Display">
+    <option value="Roboto Mono">
+    <option value="Lora">
+    <option value="Nunito">
+    <option value="Titillium Web">
+    <option value="Ubuntu">
+    <option value="PT Serif">
+    <option value="Roboto Slab">
+    <option value="Noto Sans">
+    <option value="Bitter">
+    <option value="Oxygen">
+    <option value="Cabin">
+    <option value="Inconsolata">
+    <option value="Dancing Script">
+    <option value="Pacifico">
+    <option value="Indie Flower">
+    <option value="Quicksand">
+    <option value="Comfortaa">
+    <option value="Crimson Text">
+    <option value="Fira Sans">
+    <option value="Libre Baskerville">
+    <option value="Anton">
+    <option value="Spectral">
+    <option value="Karla">
+    <option value="EB Garamond">
+    <option value="Cormorant Garamond">
+    <option value="Alice">
+    <option value="Libertinus Serif">
+</datalist>
+
+<script>
+    const popularFonts = [
+        "Roboto", "Open Sans", "Lato", "Montserrat", "Oswald", "Source Sans Pro", 
+        "Slabo 27px", "Raleway", "PT Sans", "Merriweather", "Playfair Display", 
+        "Roboto Mono", "Lora", "Nunito", "Titillium Web", "Ubuntu", "PT Serif", 
+        "Roboto Slab", "Noto Sans", "Bitter", "Oxygen", "Cabin", "Inconsolata", 
+        "Dancing Script", "Pacifico", "Indie Flower", "Quicksand", "Comfortaa", 
+        "Crimson Text", "Fira Sans", "Libre Baskerville", "Anton", "Spectral", 
+        "Karla", "EB Garamond", "Cormorant Garamond", "Alice", "Libertinus Serif"
+    ];
+
+    function updateFont(paneNumber, fontName) {
+        if (!fontName || !popularFonts.includes(fontName)) return;
+
+        const pane = document.getElementById(`pane-${paneNumber}`);
+        const formattedName = fontName.replace(/\s+/g, '+');
+        
+        // Dynamic loading
+        const linkId = `font-link-pane-${paneNumber}`;
+        let link = document.getElementById(linkId);
+        
+        if (!link) {
+            link = document.createElement('link');
+            link.id = linkId;
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+        }
+        
+        link.href = `https://fonts.googleapis.com/css2?family=${formattedName}:ital,wght@0,400;0,700;1,400;1,700&display=swap`;
+        
+        // Apply to article
+        const article = pane.querySelector('.content');
+        article.style.fontFamily = `"${fontName}", serif`;
+    }
+
+    function scrollToPane(index) {
+        container.scrollTo({
+            left: index * container.clientWidth,
+            behavior: 'smooth'
+        });
+    }
+
+    // Arrow indicator logic: hide left arrow on first pane, right on last
+    const container = document.getElementById('panes');
+    const leftArrow = document.querySelector('.nav-arrow.left');
+    const rightArrow = document.querySelector('.nav-arrow.right');
+
+    function updateArrows() {
+        const scrollLeft = container.scrollLeft;
+        const width = container.clientWidth;
+        
+        // Use a small buffer (10px) to account for rounding errors
+        leftArrow.style.opacity = scrollLeft > 10 ? '1' : '0';
+        leftArrow.style.pointerEvents = scrollLeft > 10 ? 'auto' : 'none';
+        
+        rightArrow.style.opacity = scrollLeft < (container.scrollWidth - width - 10) ? '1' : '0';
+        rightArrow.style.pointerEvents = scrollLeft < (container.scrollWidth - width - 10) ? 'auto' : 'none';
+    }
+
+    container.addEventListener('scroll', updateArrows);
+    window.addEventListener('resize', updateArrows);
+    
+    // Initial state
+    updateArrows();
+</script>
+
+</body>
+</html>
