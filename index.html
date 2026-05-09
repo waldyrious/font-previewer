@@ -250,18 +250,8 @@
 </datalist>
 
 <script>
-    const popularFonts = [
-        "Roboto", "Open Sans", "Lato", "Montserrat", "Oswald", "Source Sans Pro", 
-        "Slabo 27px", "Raleway", "PT Sans", "Merriweather", "Playfair Display", 
-        "Roboto Mono", "Lora", "Nunito", "Titillium Web", "Ubuntu", "PT Serif", 
-        "Roboto Slab", "Noto Sans", "Bitter", "Oxygen", "Cabin", "Inconsolata", 
-        "Dancing Script", "Pacifico", "Indie Flower", "Quicksand", "Comfortaa", 
-        "Crimson Text", "Fira Sans", "Libre Baskerville", "Anton", "Spectral", 
-        "Karla", "EB Garamond", "Cormorant Garamond", "Alice", "Libertinus Serif"
-    ];
-
     function updateFont(paneNumber, fontName) {
-        if (!fontName || !popularFonts.includes(fontName)) return;
+        if (!fontName || fontName.length < 2) return;
 
         const pane = document.getElementById(`pane-${paneNumber}`);
         const formattedName = fontName.replace(/\s+/g, '+');
