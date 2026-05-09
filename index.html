@@ -207,6 +207,11 @@
 </div>
 
 <datalist id="font-list">
+    <!-- Common fonts, often with metric-compatible fallbacks -->
+    <option value="Arial">
+    <option value="Helvetica">
+    <option value="Courier New">
+    <option value="Times New Roman">
     <!-- Popular Google Fonts -->
     <option value="Roboto">
     <option value="Open Sans">
@@ -247,18 +252,35 @@
     <option value="Cormorant Garamond">
     <option value="Alice">
     <option value="Libertinus Serif">
+    <option value="Inter">
+    <option value="Atkinson Hyperlegible">
 </datalist>
 
 <script>
+    const systemFonts = {
+        "Arial": "sans-serif",
+        "Helvetica": "sans-serif",
+        "Courier New": "monospace",
+        "Times New Roman": "serif"
+    };
+
     function updateFont(paneNumber, fontName) {
         if (!fontName || fontName.length < 2) return;
 
         const pane = document.getElementById(`pane-${paneNumber}`);
-        const formattedName = fontName.replace(/\s+/g, '+');
-        
-        // Dynamic loading
+        const article = pane.querySelector('.content');
         const linkId = `font-link-pane-${paneNumber}`;
         let link = document.getElementById(linkId);
+
+        // If it's a known system font, apply it with its generic fallback and stop
+        if (systemFonts[fontName]) {
+            article.style.fontFamily = `"${fontName}", ${systemFonts[fontName]}`;
+            if (link) link.href = "";
+            return;
+        }
+
+        // Otherwise, attempt to load from Google Fonts
+        const formattedName = fontName.trim().replace(/\s+/g, '+');
         
         if (!link) {
             link = document.createElement('link');
@@ -268,9 +290,6 @@
         }
         
         link.href = `https://fonts.googleapis.com/css2?family=${formattedName}:ital,wght@0,400;0,700;1,400;1,700&display=swap`;
-        
-        // Apply to article
-        const article = pane.querySelector('.content');
         article.style.fontFamily = `"${fontName}", serif`;
     }
 
